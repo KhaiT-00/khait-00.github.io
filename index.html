@@ -7,80 +7,15 @@
             content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
         />
         <title>Happy Birthday Baibua</title>
-        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="../css/style.css" />
     </head>
     <body>
         <div class="landing-container fade-in">
-            <div class="landing-header">
-                <p>For You</p>
-                <h1>Happy Birthday, Baibua</h1>
-            </div>
-
-            <div class="hero-image-wrapper">
-                <!-- Image is set to image/main.jpg, fallback to styled text placeholder if not uploaded yet -->
-                <img
-                    src="assets/image/main.jpg"
-                    alt="Steave"
-                    class="hero-image"
-                    id="heroImg"
-                    onerror="
-                        this.style.display = 'none';
-                        document.getElementById('heroFallback').style.display =
-                            'flex';
-                    "
-                />
-                <div
-                    id="heroFallback"
-                    style="
-                        display: none;
-                        width: 100%;
-                        height: 100%;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-                        padding: 2rem;
-                        background: var(--bg-secondary);
-                    "
-                >
-                    <span
-                        style="
-                            font-family: var(--font-serif);
-                            font-size: 1.5rem;
-                            margin-bottom: 0.5rem;
-                            font-style: italic;
-                            color: var(--text-secondary);
-                        "
-                        >image/main.jpg</span
-                    >
-                    <span
-                        style="
-                            font-size: 0.75rem;
-                            color: var(--text-secondary);
-                            text-transform: uppercase;
-                            letter-spacing: 0.05em;
-                            line-height: 1.4;
-                        "
-                        >Upload main.jpg to image/ folder</span
-                    >
-                </div>
-            </div>
-
-            <div class="landing-buttons">
-                <a href="slideshow.html" class="btn btn-primary">continue</a>
-                <a href="gallery.html" class="btn btn-secondary">Gallery</a>
+            <div class="landing-header" style="margin-top: 38vh;">
+                <p>รอก่อนๆ ดูได้ตอน</p>
+                <h1>20:30</h1>
+                <p>ไม่ต้องรีบ ดูเลยมันไม่สนุก</p>
             </div>
         </div>
-
-        <script>
-            // Fade in image nicely once loaded
-            const img = document.getElementById("heroImg");
-            if (img.complete) {
-                img.classList.add("loaded");
-            } else {
-                img.addEventListener("load", () => {
-                    img.classList.add("loaded");
-                });
-            }
-        </script>
     </body>
 </html>
