@@ -152,7 +152,6 @@ const momentsData = [
   }
 ];
 
-// Helper to check if an image exists by loading it
 function checkImage(url) {
   return new Promise((resolve) => {
     const img = new Image();
@@ -162,8 +161,9 @@ function checkImage(url) {
   });
 }
 
-// Dynamically discover images for all moments (supporting png, jpg, jpeg)
 async function loadMomentsImages() {
+  // Pro-tip: Put your most commonly used extensions at the front of the array 
+  // so the script finds them on the first or second try!
   const extensions = ['jpg', 'png', 'jpeg', 'JPG', 'PNG', 'JPEG'];
   
   for (const moment of momentsData) {
@@ -174,22 +174,21 @@ async function loadMomentsImages() {
     let foundInIndex = true;
 
     while (foundInIndex) {
-      foundInIndex = false;
+      foundInIndex = false; // Reset for the current index
       
-      // Probe all extensions in parallel for the current image index
-      const probes = extensions.map(ext => {
+      // Probe extensions sequentially
+      for (const ext of extensions) {
         const filename = `${moment.id}_${imgIdx}.${ext}`;
         const url = `assets/gallery/${filename}`;
-        return checkImage(url).then(exists => exists ? filename : null);
-      });
-      
-      const results = await Promise.all(probes);
-      const foundFile = results.find(res => res !== null);
-      
-      if (foundFile) {
-        moment.images.push(foundFile);
-        imgIdx++;
-        foundInIndex = true;
+        
+        const exists = await checkImage(url);
+        
+        if (exists) {
+          moment.images.push(filename);
+          imgIdx++;
+          foundInIndex = true;
+          break; // ✨ SUCCESS: Skip the remaining extensions and move to next image!
+        }
       }
     }
   }
