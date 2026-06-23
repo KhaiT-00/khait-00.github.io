@@ -162,22 +162,12 @@ function checkImage(url) {
 }
 
 async function loadMomentsImages() {
-  const extensions = ['jpg', 'png', 'jpeg', 'JPG', 'PNG', 'JPEG'];
+  // Pro-tip: Put your most commonly used extensions at the front of the array 
+  // so the script finds them on the first or second try!
+  const extensions = ['jpg', 'png', 'JPG', 'PNG'];
   
-  // 1. Get the total number of moments to use as the denominator (the /64)
-  const totalMoments = momentsData.length;
-  let processedCount = 0;
-  
-  // 2. Grab the HTML element where you want to show the numbers
-  const progressText = document.getElementById('loading-progress');
-
   for (const moment of momentsData) {
-    // If it's text-only, skip image loading but STILL count it towards progress
-    if (moment.isTextOnly) {
-      processedCount++;
-      if (progressText) progressText.innerText = `${processedCount}/${totalMoments}`;
-      continue; 
-    }
+    if (moment.isTextOnly) continue; // Skip text-only slides
     
     moment.images = [];
     let imgIdx = 1;
@@ -197,15 +187,9 @@ async function loadMomentsImages() {
           moment.images.push(filename);
           imgIdx++;
           foundInIndex = true;
-          break; // Skip the remaining extensions
+          break; // ✨ SUCCESS: Skip the remaining extensions and move to next image!
         }
       }
-    }
-    
-    // 3. Update the counter after successfully finishing a moment
-    processedCount++;
-    if (progressText) {
-      progressText.innerText = `${processedCount}/${totalMoments}`;
     }
   }
 }
