@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Show premium minimal loading indicator
   galleryGrid.innerHTML = `
     <div id="galleryLoader" style="grid-column: 1/-1; text-align: center; padding: 6rem 2rem; color: var(--text-secondary); font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.75rem; animation: pulse 1.5s infinite ease-in-out;">
-      Scanning gallery...
+      <div style="margin-bottom: 0.5rem;">Scanning gallery...</div>
+      <div id="galleryProgress" style="font-size: 1.25rem; font-weight: 500; color: var(--text-primary);">0/0</div>
     </div>
   `;
 
@@ -22,7 +23,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Load and discover moments images
   if (typeof loadMomentsImages !== 'undefined') {
-    await loadMomentsImages();
+    const progressEl = document.getElementById('galleryProgress');
+    await loadMomentsImages((current, total) => {
+      if (progressEl) {
+        progressEl.innerText = `${current}/${total}`;
+      }
+    });
   }
 
   // Clear loader

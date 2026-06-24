@@ -4,8 +4,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Show premium loading indicator
   container.innerHTML = `
-    <div id="slideshowLoader" style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; animation: pulse 1.5s infinite ease-in-out;">
-      Loading memories...
+    <div id="slideshowLoader" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; width: 100%; color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; animation: pulse 1.5s infinite ease-in-out;">
+      <div style="margin-bottom: 0.5rem;">Loading memories...</div>
+      <div id="slideshowProgress" style="font-size: 1.25rem; font-weight: 500; color: var(--text-primary);">0/0</div>
     </div>
   `;
 
@@ -19,7 +20,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Load and discover moments images
   if (typeof loadMomentsImages !== 'undefined') {
-    await loadMomentsImages();
+    const progressEl = document.getElementById('slideshowProgress');
+    await loadMomentsImages((current, total) => {
+      if (progressEl) {
+        progressEl.innerText = `${current}/${total}`;
+      }
+    });
   }
 
   // Filter only moments that have at least 1 image discovered OR are text-only speech slides
@@ -77,12 +83,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const blurBg = document.createElement('img');
         blurBg.className = 'slide-image-blur-bg';
-        blurBg.src = `assets/gallery/${moment.images[0]}`;
+        blurBg.dataset.src = `assets/gallery/${moment.images[0]}`;
         blurBg.alt = '';
         
         const frontImg = document.createElement('img');
         frontImg.className = 'slide-image-front';
-        frontImg.src = `assets/gallery/${moment.images[0]}`;
+        frontImg.dataset.src = `assets/gallery/${moment.images[0]}`;
         frontImg.alt = moment.description;
 
         canvas.appendChild(blurBg);
@@ -99,12 +105,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           const blurBg = document.createElement('img');
           blurBg.className = 'slide-image-blur-bg';
-          blurBg.src = `assets/gallery/${imgName}`;
+          blurBg.dataset.src = `assets/gallery/${imgName}`;
           blurBg.alt = '';
           
           const frontImg = document.createElement('img');
           frontImg.className = 'slide-image-front';
-          frontImg.src = `assets/gallery/${imgName}`;
+          frontImg.dataset.src = `assets/gallery/${imgName}`;
           frontImg.alt = moment.description;
 
           canvas.appendChild(blurBg);
@@ -197,5 +203,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Observe all slides
   document.querySelectorAll('.slide').forEach(slide => {
     observer.observe(slide);
+  });
+
+  // Lazy load images when slides approach viewport (up to 1 screen width away)
+  const imageObserverOptions = {
+    root: container,
+    rootMargin: '0px 100% 0px 100%'
+  };
+
+  const imageObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const lazyImages = entry.target.querySelectorAll('img[data-src]');
+        lazyImages.forEach(img => {
+          img.src = img.dataset.src;
+          img.removeAttribute('data-src');
+        });
+        // Stop observing this slide once loaded
+        imageObserver.unobserve(entry.target);
+      }
+    });
+  }, imageObserverOptions);
+
+  document.querySelectorAll('.slide').forEach(slide => {
+    imageObserver.observe(slide);
   });
 });
